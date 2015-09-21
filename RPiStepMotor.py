@@ -53,9 +53,9 @@ class StepMotor(object):
 		fullRotation -- number of cycles needed to make a complete turn
 		"""
 		if len(pins) != phases:
-			raise WrongInputPinsNumber("step motor needs %d input pins" % phases)
+			raise WrongInputPinsNumber("step motor needs %d input pins" % phases) #inherits from ValueError
 		if [pin for pin in pins if pin in allPins]:
-			raise PinsAlreadyUsed("some pins are already in use")
+			raise PinsAlreadyUsed("some pins are already in use") #inherits from ValueError
 		global allPins
 		allPins.update(pins)
 		self._fullRotation = fullRotation
@@ -85,6 +85,12 @@ class StepMotor(object):
                 for motor in iterable.copy(): motor.__cleanup__()
 
 	def __cleanup__(self):
+                """Perform a cleanup of stepper motor object(s).
+		
+		Function waits till all threads end and frees related GPIO pins,
+		so cleaned up objects cannot be used again.
+		"""
+
                 global allMotors #eh
 		global allPins
                 motor = self
@@ -119,7 +125,7 @@ class StepMotor(object):
 		radians -- use radians instead of degrees
 		"""
 		if self.isRunning():
-			raise AlreadyRunning("step motor already running")
+			raise AlreadyRunning("step motor already running") #inherits from RuntimeError
 		pins = self._pins[::-1] if angle < 0 else self._pins
 		angle = math.degrees(abs(angle)) if radians else abs(angle)
 		steps = int(angle / 360 * self._fullRotation)
@@ -156,7 +162,7 @@ class StepMotor(object):
 			stepDelay = timePeriod / max(cycles) / phases
 		
 		if stepDelay < minimalStepDelay:
-			raise StepDelayTooSmall("step delay is too small")
+			raise StepDelayTooSmall("step delay is too small") #inherits from ValueError
 		
 		if function is None:
 			for i in range(steps):
