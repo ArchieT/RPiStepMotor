@@ -95,6 +95,7 @@ class StepMotor(object):
 		global allPins
                 motor = self
                 self.finish()
+                allMotors.remove(motor) #ehh
 		GPIO.cleanup(motor._pins)
 		allPins.difference_update(motor._pins)
 		del motor._fullRotation
